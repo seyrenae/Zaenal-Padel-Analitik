@@ -12,7 +12,7 @@
     <!-- Container Utama -->
     <div class="bg-black/80 p-8 rounded-xl border-t-4 border-blue-500 shadow-2xl text-center min-w-[700px]">
         
-        <!-- Tabel Skor (Desain Baru mirip Operator) -->
+    
         <div class="mb-6 rounded-xl border border-zinc-700/60 overflow-hidden bg-[#1e1e1e]">
             <table class="w-full text-center text-lg">
                 <thead class="bg-zinc-800/40 text-zinc-400 border-b border-zinc-700/60">
@@ -25,19 +25,13 @@
                 </thead>
                 <tbody class="divide-y divide-zinc-700/60 bg-zinc-800/10">
                     <tr>
-                        <td class="py-3 px-6 text-left font-bold text-white uppercase">
-                            <span id="label-tim-a">TIM A</span>
-                            <span id="serve-indicator-a" class="hidden text-yellow-400 ml-1 text-xl">🎾</span>
-                        </td>
+                        <td id="label-tim-a" class="py-3 px-6 text-left font-bold text-white uppercase">TIM A</td>
                         <td id="set-1-a" class="py-3 px-6 text-zinc-300">-</td>
                         <td id="set-2-a" class="py-3 px-6 text-zinc-300">-</td>
                         <td id="game-a" class="py-3 px-6 font-bold text-blue-400">0</td>
                     </tr>
                     <tr>
-                        <td class="py-3 px-6 text-left font-bold text-white uppercase">
-                            <span id="label-tim-b">TIM B</span>
-                            <span id="serve-indicator-b" class="hidden text-yellow-400 ml-1 text-xl">🎾</span>
-                        </td>
+                        <td id="label-tim-b" class="py-3 px-6 text-left font-bold text-white uppercase">TIM B</td>
                         <td id="set-1-b" class="py-3 px-6 text-zinc-300">-</td>
                         <td id="set-2-b" class="py-3 px-6 text-zinc-300">-</td>
                         <td id="game-b" class="py-3 px-6 font-bold text-red-400">0</td>
@@ -46,7 +40,7 @@
             </table>
         </div>
         
-        <!-- Papan Skor Poin Berjalan (Font sangat besar) -->
+
         <div class="flex items-center justify-center gap-12 text-[7rem] font-black mb-6 px-10 leading-none">
             <div class="text-blue-400 drop-shadow-md" id="poin-a">0</div>
             <div class="text-zinc-600 text-5xl">:</div>
@@ -84,18 +78,6 @@
                         // Update Nama Tim
                         document.getElementById('label-tim-a').innerText = e.namaTimA;
                         document.getElementById('label-tim-b').innerText = e.namaTimB;
-                        
-                        // Update Serve Indicator
-                        if (e.currentServer === 'Tim A') {
-                            document.getElementById('serve-indicator-a').classList.remove('hidden');
-                            document.getElementById('serve-indicator-b').classList.add('hidden');
-                        } else if (e.currentServer === 'Tim B') {
-                            document.getElementById('serve-indicator-a').classList.add('hidden');
-                            document.getElementById('serve-indicator-b').classList.remove('hidden');
-                        } else {
-                            document.getElementById('serve-indicator-a').classList.add('hidden');
-                            document.getElementById('serve-indicator-b').classList.add('hidden');
-                        }
                         
                         // Notifikasi (Jika match selesai, durasi tampil lebih lama dan warna berbeda)
                         const notif = document.getElementById('notifikasi');

@@ -70,7 +70,7 @@ Setelah semua dari 4 layanan di atas berjalan dengan aman tanpa *error*, akses a
   Untuk memulai turnamen baru. Mengatur format permainan (*Best of 3*, *Golden Point*), mendaftarkan nama pemain, dan penentuan siapa yang melakukan *serve* pertama.
 * **`/operator/{id}` (Dashboard Operator):** 
   Halaman "Dapur" wasit untuk memonitor pertandingan. Terdiri atas kontrol pencatatan poin (*Two-Step Flow*), tombol Jeda, pindah serve, undo rekaman (*History State*), dll.
-* **`/livestream` (Livestream / OBS Overlay):** 
-  URL khusus untuk _Broadcaster_ (Sutradara Siaran). Halaman ini berlatar belakang transparan dan menampilkan skor angka raksasa yang bergerak *real-time* otomatis. Cocok dimasukkan ke dalam **OBS Studio** menggunakan fitur **Browser Source**.
+* **`/livestream/{id}` (Livestream / OBS Overlay):** 
+  URL khusus untuk _Broadcaster_ (Sutradara Siaran). Halaman ini berlatar belakang transparan dan menampilkan skor angka raksasa yang bergerak *real-time* otomatis untuk pertandingan tertentu. Cocok dimasukkan ke dalam **OBS Studio** menggunakan fitur **Browser Source**.
 * **`/summary/{id}` (Halaman Statistik/Ringkasan):** 
   Halaman ringkasan *Post-Match* yang menampilkan statistik tingkat lanjut, rekapitulasi data akurat terkait poin *Winners*, *Errors*, dan pemakaian Dinding oleh setiap pemain.

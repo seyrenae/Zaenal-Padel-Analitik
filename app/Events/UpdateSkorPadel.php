@@ -22,10 +22,11 @@ class UpdateSkorPadel implements ShouldBroadcastNow
     public $namaTimB;
     public $aksiTerakhir;
     public $statusMatch; // BARU: Untuk mengecek apakah match selesai
-    public $currentServer; // BARU: Penanda serve
+    public $matchId; // BARU: ID Pertandingan untuk channel dinamis
 
     public function __construct($requestPayload)
     {
+        $this->matchId = $requestPayload['match_id'] ?? 1;
         $this->poinTimA = $requestPayload['poinTimA'] ?? '0';
         $this->poinTimB = $requestPayload['poinTimB'] ?? '0';
         $this->gameTimA = $requestPayload['gameTimA'] ?? 0;
@@ -42,7 +43,7 @@ class UpdateSkorPadel implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('pertandingan-padel'),
+            new Channel('pertandingan-padel.' . $this->matchId),
         ];
     }
 }

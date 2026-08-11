@@ -42,14 +42,25 @@ class PertandinganController extends Controller
 
     // --- FUNGSI BARU UNTUK FASE 3 ---
 
-    // Menampilkan Halaman Live Tracking
     public function operator($id) {
         $pertandingan = Pertandingan::findOrFail($id);
         // Buat nama tim gabungan untuk ditampilkan
         $namaTimA = $pertandingan->tim_a_pemain_kiri . ' & ' . $pertandingan->tim_a_pemain_kanan;
         $namaTimB = $pertandingan->tim_b_pemain_kiri . ' & ' . $pertandingan->tim_b_pemain_kanan;
 
-        return view('operator', compact('pertandingan', 'namaTimA', 'namaTimB'));
+        $stateTerakhir = $pertandingan->state_terakhir ? json_decode($pertandingan->state_terakhir, true) : null;
+
+        return view('operator', compact('pertandingan', 'namaTimA', 'namaTimB', 'stateTerakhir'));
+    }
+
+    // Menampilkan Halaman Livestream (OBS)
+    public function livestream($id) {
+        $pertandingan = Pertandingan::findOrFail($id);
+        $namaTimA = $pertandingan->tim_a_pemain_kiri . ' & ' . $pertandingan->tim_a_pemain_kanan;
+        $namaTimB = $pertandingan->tim_b_pemain_kiri . ' & ' . $pertandingan->tim_b_pemain_kanan;
+        $stateTerakhir = $pertandingan->state_terakhir ? json_decode($pertandingan->state_terakhir, true) : null;
+
+        return view('livestream', compact('pertandingan', 'namaTimA', 'namaTimB', 'stateTerakhir'));
     }
 
     // Memproses Input Poin & Menyimpan ke Database
@@ -71,6 +82,23 @@ class PertandinganController extends Controller
             ]);
         }
 
+        // Update State Terakhir di Pertandingan
+        $stateJson = json_encode([
+            'numPointA' => $request->numPointA ?? 0,
+            'numPointB' => $request->numPointB ?? 0,
+            'poinTimA' => $request->poinTimA ?? '0',
+            'poinTimB' => $request->poinTimB ?? '0',
+            'gameTimA' => $request->gameTimA ?? 0,
+            'gameTimB' => $request->gameTimB ?? 0,
+            'historiSetA' => $request->historiSetA ?? [0,0,0],
+            'historiSetB' => $request->historiSetB ?? [0,0,0],
+            'currentSet' => $request->currentSet ?? 1,
+            'currentServer' => $request->currentServer ?? 'Tim A',
+            'isPaused' => ($request->statusMatch ?? '') === 'jeda',
+            'matchFinished' => ($request->statusMatch ?? '') === 'selesai'
+        ]);
+        DB::table('pertandingans')->where('id', $request->match_id)->update(['state_terakhir' => $stateJson]);
+
         // 2. Broadcast ke Livestream (OBS)
         UpdateSkorPadel::dispatch($request->all());
 
@@ -88,6 +116,23 @@ class PertandinganController extends Controller
         if ($lastLog) {
             DB::table('log_poins')->where('id', $lastLog->id)->delete();
         }
+
+        // Update State Terakhir di Pertandingan (Untuk Undo)
+        $stateJson = json_encode([
+            'numPointA' => $request->numPointA ?? 0,
+            'numPointB' => $request->numPointB ?? 0,
+            'poinTimA' => $request->poinTimA ?? '0',
+            'poinTimB' => $request->poinTimB ?? '0',
+            'gameTimA' => $request->gameTimA ?? 0,
+            'gameTimB' => $request->gameTimB ?? 0,
+            'historiSetA' => $request->historiSetA ?? [0,0,0],
+            'historiSetB' => $request->historiSetB ?? [0,0,0],
+            'currentSet' => $request->currentSet ?? 1,
+            'currentServer' => $request->currentServer ?? 'Tim A',
+            'isPaused' => ($request->statusMatch ?? '') === 'jeda',
+            'matchFinished' => ($request->statusMatch ?? '') === 'selesai'
+        ]);
+        DB::table('pertandingans')->where('id', $request->match_id)->update(['state_terakhir' => $stateJson]);
 
         // Broadcast skor yang dikembalikan ke Livestream (OBS)
         UpdateSkorPadel::dispatch($request->all());
@@ -160,9 +205,25 @@ class PertandinganController extends Controller
             $errorStats[$pemain] = ['winner' => $winner, 'error' => $error];
         }
 
+        $stateTerakhir = $pertandingan->state_terakhir ? json_decode($pertandingan->state_terakhir, true) : null;
+        $historiSetA = $stateTerakhir['historiSetA'] ?? [0,0,0];
+        $historiSetB = $stateTerakhir['historiSetB'] ?? [0,0,0];
+
+        // Hitung durasi pertandingan
+        $durasi = $pertandingan->created_at->diff($pertandingan->updated_at);
+        $durasiFormat = '';
+        if ($durasi->h > 0) {
+            $durasiFormat .= $durasi->h . 'j ';
+        }
+        $durasiFormat .= $durasi->i . 'm';
+        if ($durasi->h == 0 && $durasi->i == 0) {
+            $durasiFormat = '< 1m';
+        }
+
         return view('summary', compact(
             'pertandingan', 'totalPoin', 'persentaseDinding', 
-            'statsTimA', 'statsTimB', 'pemenangMatch', 'errorStats'
+            'statsTimA', 'statsTimB', 'pemenangMatch', 'errorStats',
+            'historiSetA', 'historiSetB', 'durasiFormat'
         ));
     }
 }
