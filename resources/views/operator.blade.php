@@ -14,8 +14,13 @@
         
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
-            <p class="text-zinc-400 text-sm">Live tracking · set <span id="set-indicator">1</span></p>
-            <span class="bg-green-900/30 text-green-500 px-3 py-1 rounded-full text-xs font-bold border border-green-800">Berlangsung</span>
+            <div>
+                <p class="text-zinc-400 text-sm">Live tracking · set <span id="set-indicator">1</span></p>
+            </div>
+            <div class="flex gap-2 items-center">
+                <a href="/livestream/{{ $pertandingan->id }}" target="_blank" class="bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-300 px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer">🖥️ Buka OBS</a>
+                <span class="bg-green-900/30 text-green-500 px-3 py-1 rounded-full text-xs font-bold border border-green-800">Berlangsung</span>
+            </div>
         </div>
 
         <!-- Tabel Skor Set dan Game -->
@@ -106,24 +111,27 @@
     </div>
 
     <script>
-        // Setup Variabel JavaScript
-        let numPointA = 0; let numPointB = 0;
-        let numGameA = 0;  let numGameB = 0;
-        let currentSet = 1;
+        // Setup Variabel JavaScript dari Database State (Agar tahan Refresh)
+        let numPointA = {{ isset($stateTerakhir['numPointA']) ? $stateTerakhir['numPointA'] : 0 }};
+        let numPointB = {{ isset($stateTerakhir['numPointB']) ? $stateTerakhir['numPointB'] : 0 }};
+        let numGameA = {{ isset($stateTerakhir['gameTimA']) ? $stateTerakhir['gameTimA'] : 0 }};
+        let numGameB = {{ isset($stateTerakhir['gameTimB']) ? $stateTerakhir['gameTimB'] : 0 }};
+        let currentSet = {{ isset($stateTerakhir['currentSet']) ? $stateTerakhir['currentSet'] : 1 }};
         const padelScores = ["0", "15", "30", "40"];
         
         let pendingPoin = { tim: null, pemain: null, jenis: null, dinding: 0 };
-        let historiSetA = [0, 0, 0];
-        let historiSetB = [0, 0, 0];
+        let historiSetA = @json(isset($stateTerakhir['historiSetA']) ? $stateTerakhir['historiSetA'] : [0, 0, 0]);
+        let historiSetB = @json(isset($stateTerakhir['historiSetB']) ? $stateTerakhir['historiSetB'] : [0, 0, 0]);
         let jenisPukulan = 'Serve';
         
         let isGoldenPoint = {{ $pertandingan->golden_point ? 'true' : 'false' }};
         let stateHistory = [];
         let setsWonA = 0;
         let setsWonB = 0;
-        let matchFinished = false;
-        let isPaused = false;
+        let matchFinished = {{ (isset($stateTerakhir['matchFinished']) && $stateTerakhir['matchFinished']) ? 'true' : 'false' }};
+        let isPaused = {{ (isset($stateTerakhir['isPaused']) && $stateTerakhir['isPaused']) ? 'true' : 'false' }};
         let isSwapped = false;
+        let currentServer = '{{ isset($stateTerakhir['currentServer']) ? $stateTerakhir['currentServer'] : $pertandingan->serve_awal }}';
 
         function toggleJeda() {
             isPaused = !isPaused;
@@ -140,6 +148,8 @@
                 skip_db: true, // Bypass simpan ke DB log_poins
                 match_id: {{ $pertandingan->id }},
                 tim_pemenang: '-',
+                numPointA: numPointA,
+                numPointB: numPointB,
                 poinTimA: document.getElementById('poin-a-lokal').innerText,
                 poinTimB: document.getElementById('poin-b-lokal').innerText,
                 gameTimA: numGameA,
@@ -154,8 +164,6 @@
                 currentServer: currentServer
             });
         }
-
-        let currentServer = '{{ $pertandingan->serve_awal }}';
         
         function updateServerUI() {
             if (currentServer === 'Tim A') {
@@ -167,7 +175,34 @@
             }
         }
         
-        document.addEventListener('DOMContentLoaded', updateServerUI);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateServerUI();
+            updateTabelGame();
+            document.getElementById('poin-a-lokal').innerText = '{{ isset($stateTerakhir['poinTimA']) ? $stateTerakhir['poinTimA'] : "0" }}';
+            document.getElementById('poin-b-lokal').innerText = '{{ isset($stateTerakhir['poinTimB']) ? $stateTerakhir['poinTimB'] : "0" }}';
+            document.getElementById('set-indicator').innerText = currentSet;
+            
+            // Set history UI
+            if (historiSetA[0] > 0 || historiSetB[0] > 0) {
+                document.getElementById('set-1-a').innerText = historiSetA[0];
+                document.getElementById('set-1-b').innerText = historiSetB[0];
+            }
+            if (historiSetA[1] > 0 || historiSetB[1] > 0) {
+                document.getElementById('set-2-a').innerText = historiSetA[1];
+                document.getElementById('set-2-b').innerText = historiSetB[1];
+            }
+            
+            // setsWon calc
+            setsWonA = (historiSetA[0] > historiSetB[0] ? 1 : 0) + (historiSetA[1] > historiSetB[1] ? 1 : 0) + (historiSetA[2] > historiSetB[2] ? 1 : 0);
+            setsWonB = (historiSetB[0] > historiSetA[0] ? 1 : 0) + (historiSetB[1] > historiSetA[1] ? 1 : 0) + (historiSetB[2] > historiSetA[2] ? 1 : 0);
+            
+            // Jeda state
+            if (isPaused) {
+                const btnJeda = document.getElementById('btn-jeda');
+                btnJeda.innerHTML = '▶ Lanjut';
+                btnJeda.classList.replace('text-zinc-300', 'text-yellow-400');
+            }
+        });
 
         function gantiServer() {
             currentServer = currentServer === 'Tim A' ? 'Tim B' : 'Tim A';
@@ -177,6 +212,8 @@
                 skip_db: true,
                 match_id: {{ $pertandingan->id }},
                 tim_pemenang: '-',
+                numPointA: numPointA,
+                numPointB: numPointB,
                 poinTimA: document.getElementById('poin-a-lokal').innerText,
                 poinTimB: document.getElementById('poin-b-lokal').innerText,
                 gameTimA: numGameA,
@@ -215,8 +252,10 @@
                 skip_db: true,
                 match_id: {{ $pertandingan->id }},
                 tim_pemenang: '-',
-                poinTimA: '0',
-                poinTimB: '0',
+                numPointA: numPointA,
+                numPointB: numPointB,
+                poinTimA: document.getElementById('poin-a-lokal').innerText,
+                poinTimB: document.getElementById('poin-b-lokal').innerText,
                 gameTimA: numGameA,
                 gameTimB: numGameB,
                 historiSetA: historiSetA,
@@ -464,6 +503,8 @@
                 libatkan_dinding: pendingPoin.dinding,
                 
                 // Skor saat ini:
+                numPointA: numPointA,
+                numPointB: numPointB,
                 poinTimA: document.getElementById('poin-a-lokal').innerText,
                 poinTimB: document.getElementById('poin-b-lokal').innerText,
                 gameTimA: numGameA,
@@ -549,6 +590,8 @@
                     jenis_poin: '-',
                     jenis_pukulan: '-',
                     libatkan_dinding: 0,
+                    numPointA: numPointA,
+                    numPointB: numPointB,
                     poinTimA: lastState.dispA,
                     poinTimB: lastState.dispB,
                     gameTimA: numGameA,

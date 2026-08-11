@@ -30,26 +30,25 @@
                 <tbody class="divide-y divide-zinc-700 bg-zinc-900/50">
                     <tr>
                         <td class="py-4 px-4 text-left font-bold text-blue-400">Tim A</td>
-                        <td class="py-4 px-4 font-medium text-white">6</td>
-                        <td class="py-4 px-4 font-medium text-white">4</td>
-                        <td class="py-4 px-4 font-medium text-white">6</td>
+                        <td class="py-4 px-4 font-medium text-white">{{ (isset($historiSetA[0]) && ($historiSetA[0] > 0 || $historiSetB[0] > 0)) ? $historiSetA[0] : '-' }}</td>
+                        <td class="py-4 px-4 font-medium text-white">{{ (isset($historiSetA[1]) && ($historiSetA[1] > 0 || $historiSetB[1] > 0)) ? $historiSetA[1] : '-' }}</td>
+                        <td class="py-4 px-4 font-medium text-white">{{ (isset($historiSetA[2]) && ($historiSetA[2] > 0 || $historiSetB[2] > 0)) ? $historiSetA[2] : '-' }}</td>
                     </tr>
                     <tr>
                         <td class="py-4 px-4 text-left font-bold text-red-400">Tim B</td>
-                        <td class="py-4 px-4 font-medium text-white">3</td>
-                        <td class="py-4 px-4 font-medium text-white">6</td>
-                        <td class="py-4 px-4 font-medium text-white">2</td>
+                        <td class="py-4 px-4 font-medium text-white">{{ (isset($historiSetB[0]) && ($historiSetB[0] > 0 || $historiSetA[0] > 0)) ? $historiSetB[0] : '-' }}</td>
+                        <td class="py-4 px-4 font-medium text-white">{{ (isset($historiSetB[1]) && ($historiSetB[1] > 0 || $historiSetA[1] > 0)) ? $historiSetB[1] : '-' }}</td>
+                        <td class="py-4 px-4 font-medium text-white">{{ (isset($historiSetB[2]) && ($historiSetB[2] > 0 || $historiSetA[2] > 0)) ? $historiSetB[2] : '-' }}</td>
                     </tr>
                 </tbody>
             </table>
-            <p class="text-xs text-zinc-500 mt-2 text-center">*Skor set hardcode untuk keperluan desain UI prototipe</p>
         </div>
 
         <!-- Kartu Ringkasan (Top Stats) -->
         <div class="grid grid-cols-2 gap-4 mb-8">
             <div class="bg-zinc-800/50 border border-zinc-700 p-5 rounded-xl">
                 <p class="text-sm font-medium text-zinc-400 mb-1">Durasi main</p>
-                <h3 class="text-2xl font-bold text-white">1j 42m</h3>
+                <h3 class="text-2xl font-bold text-white">{{ $durasiFormat }}</h3>
             </div>
             <div class="bg-zinc-800/50 border border-zinc-700 p-5 rounded-xl">
                 <p class="text-sm font-medium text-zinc-400 mb-1">Poin pakai dinding</p>

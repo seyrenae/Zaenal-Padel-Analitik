@@ -12,10 +12,7 @@ Route::get('/operator/{id}', [PertandinganController::class, 'operator']);
 Route::post('/tambah-poin', [PertandinganController::class, 'tambahPoin']);
 Route::post('/undo-poin', [PertandinganController::class, 'undoPoin']);
 
-// Livestream Output
-Route::get('/livestream', function () {
-    return view('livestream');
-});
+Route::get('/livestream/{id}', [PertandinganController::class, 'livestream']);
 
 
 Route::get('/summary/{id}', [PertandinganController::class, 'summary']);
