@@ -25,16 +25,16 @@
                 </thead>
                 <tbody class="divide-y divide-zinc-700/60 bg-zinc-800/10">
                     <tr>
-                        <td id="label-tim-a" class="py-3 px-6 text-left font-bold text-white uppercase">TIM A</td>
-                        <td id="set-1-a" class="py-3 px-6 text-zinc-300">-</td>
-                        <td id="set-2-a" class="py-3 px-6 text-zinc-300">-</td>
-                        <td id="game-a" class="py-3 px-6 font-bold text-blue-400">0</td>
+                        <td id="label-tim-a" class="py-3 px-6 text-left font-bold text-white uppercase">{{ $namaTimA }}</td>
+                        <td id="set-1-a" class="py-3 px-6 text-zinc-300">{{ isset($stateTerakhir['historiSetA'][0]) && ($stateTerakhir['historiSetA'][0] > 0 || $stateTerakhir['historiSetB'][0] > 0) ? $stateTerakhir['historiSetA'][0] : '-' }}</td>
+                        <td id="set-2-a" class="py-3 px-6 text-zinc-300">{{ isset($stateTerakhir['historiSetA'][1]) && ($stateTerakhir['historiSetA'][1] > 0 || $stateTerakhir['historiSetB'][1] > 0) ? $stateTerakhir['historiSetA'][1] : '-' }}</td>
+                        <td id="game-a" class="py-3 px-6 font-bold text-blue-400">{{ $stateTerakhir['gameTimA'] ?? 0 }}</td>
                     </tr>
                     <tr>
-                        <td id="label-tim-b" class="py-3 px-6 text-left font-bold text-white uppercase">TIM B</td>
-                        <td id="set-1-b" class="py-3 px-6 text-zinc-300">-</td>
-                        <td id="set-2-b" class="py-3 px-6 text-zinc-300">-</td>
-                        <td id="game-b" class="py-3 px-6 font-bold text-red-400">0</td>
+                        <td id="label-tim-b" class="py-3 px-6 text-left font-bold text-white uppercase">{{ $namaTimB }}</td>
+                        <td id="set-1-b" class="py-3 px-6 text-zinc-300">{{ isset($stateTerakhir['historiSetB'][0]) && ($stateTerakhir['historiSetA'][0] > 0 || $stateTerakhir['historiSetB'][0] > 0) ? $stateTerakhir['historiSetB'][0] : '-' }}</td>
+                        <td id="set-2-b" class="py-3 px-6 text-zinc-300">{{ isset($stateTerakhir['historiSetB'][1]) && ($stateTerakhir['historiSetA'][1] > 0 || $stateTerakhir['historiSetB'][1] > 0) ? $stateTerakhir['historiSetB'][1] : '-' }}</td>
+                        <td id="game-b" class="py-3 px-6 font-bold text-red-400">{{ $stateTerakhir['gameTimB'] ?? 0 }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -42,9 +42,9 @@
         
 
         <div class="flex items-center justify-center gap-12 text-[7rem] font-black mb-6 px-10 leading-none">
-            <div class="text-blue-400 drop-shadow-md" id="poin-a">0</div>
+            <div class="text-blue-400 drop-shadow-md" id="poin-a">{{ $stateTerakhir['poinTimA'] ?? '0' }}</div>
             <div class="text-zinc-600 text-5xl">:</div>
-            <div class="text-red-400 drop-shadow-md" id="poin-b">0</div>
+            <div class="text-red-400 drop-shadow-md" id="poin-b">{{ $stateTerakhir['poinTimB'] ?? '0' }}</div>
         </div>
 
         <!-- Notifikasi Animasi & Pemenang -->
@@ -56,7 +56,7 @@
     <script type="module">
         function mulaiListen() {
             if (typeof window.Echo !== 'undefined') {
-                window.Echo.channel('pertandingan-padel')
+                window.Echo.channel('pertandingan-padel.{{ $pertandingan->id }}')
                     .listen('UpdateSkorPadel', (e) => {
                         // Update Poin Utama
                         document.getElementById('poin-a').innerText = e.poinTimA;
