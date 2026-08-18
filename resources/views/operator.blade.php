@@ -14,8 +14,16 @@
         
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
-            <div>
+            <div class="flex flex-col gap-1">
                 <p class="text-zinc-400 text-sm">Live tracking · set <span id="set-indicator">1</span></p>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs text-zinc-500">Format:</label>
+                    <select id="format-set-selector" onchange="gantiFormatSet()" class="bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs rounded px-2 py-1 outline-none focus:border-blue-500 transition">
+                        <option value="1">Best of 1</option>
+                        <option value="3" selected>Best of 3</option>
+                        <option value="5">Best of 5</option>
+                    </select>
+                </div>
             </div>
             <div class="flex gap-2 items-center">
                 <a href="/livestream/{{ $pertandingan->id }}" target="_blank" class="bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-300 px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer">🖥️ Buka OBS</a>
@@ -29,22 +37,31 @@
                 <thead class="bg-zinc-800/40 text-zinc-400 border-b border-zinc-700/60">
                     <tr>
                         <th class="py-3 px-4 text-left font-medium">Tim</th>
-                        <th class="py-3 px-4 font-medium">Set 1</th>
-                        <th class="py-3 px-4 font-medium">Set 2</th>
+                        <th id="th-set-1" class="py-3 px-2 font-medium">Set 1</th>
+                        <th id="th-set-2" class="py-3 px-2 font-medium">Set 2</th>
+                        <th id="th-set-3" class="py-3 px-2 font-medium">Set 3</th>
+                        <th id="th-set-4" class="py-3 px-2 font-medium hidden">Set 4</th>
+                        <th id="th-set-5" class="py-3 px-2 font-medium hidden">Set 5</th>
                         <th class="py-3 px-4 font-medium">Game</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-700/60 bg-zinc-800/10">
                     <tr>
                         <td class="py-3 px-4 text-left font-medium text-white">Tim A</td>
-                        <td id="set-1-a" class="py-3 px-4 text-zinc-300">-</td>
-                        <td id="set-2-a" class="py-3 px-4 text-zinc-300">-</td>
+                        <td id="set-1-a" class="py-3 px-2 text-zinc-300">-</td>
+                        <td id="set-2-a" class="py-3 px-2 text-zinc-300">-</td>
+                        <td id="set-3-a" class="py-3 px-2 text-zinc-300">-</td>
+                        <td id="set-4-a" class="py-3 px-2 text-zinc-300 hidden">-</td>
+                        <td id="set-5-a" class="py-3 px-2 text-zinc-300 hidden">-</td>
                         <td id="game-a-lokal" class="py-3 px-4 font-bold text-blue-400">0</td>
                     </tr>
                     <tr>
                         <td class="py-3 px-4 text-left font-medium text-white">Tim B</td>
-                        <td id="set-1-b" class="py-3 px-4 text-zinc-300">-</td>
-                        <td id="set-2-b" class="py-3 px-4 text-zinc-300">-</td>
+                        <td id="set-1-b" class="py-3 px-2 text-zinc-300">-</td>
+                        <td id="set-2-b" class="py-3 px-2 text-zinc-300">-</td>
+                        <td id="set-3-b" class="py-3 px-2 text-zinc-300">-</td>
+                        <td id="set-4-b" class="py-3 px-2 text-zinc-300 hidden">-</td>
+                        <td id="set-5-b" class="py-3 px-2 text-zinc-300 hidden">-</td>
                         <td id="game-b-lokal" class="py-3 px-4 font-bold text-red-400">0</td>
                     </tr>
                 </tbody>
@@ -61,6 +78,9 @@
         </div>
 
         <!-- Tombol Skor Raksasa (Langkah 1) -->
+        <div id="golden-point-indicator" class="text-center text-yellow-400 text-xs font-bold bg-yellow-500/20 px-4 py-2 rounded-lg border border-yellow-500/50 hidden animate-pulse mb-4 mx-auto w-max">
+            ✨ GOLDEN POINT ✨
+        </div>
         <div id="skor-raksasa-container" class="grid grid-cols-[1fr_auto_1fr] gap-4 items-center mb-4">
             <button id="btn-skor-a" onclick="tapScore('Tim A')" class="bg-[#021631] hover:bg-[#0a2347] border border-[#0f2e5a] rounded-xl py-10 flex flex-col items-center justify-center transition shadow-lg relative">
                 <span class="text-blue-500/80 font-medium text-sm mb-2 flex items-center justify-center gap-1">Tim A <span id="serve-a" class="text-yellow-400 text-lg hidden">🎾</span></span>
@@ -110,6 +130,32 @@
         </div>
     </div>
 
+    <!-- Modal Jeda -->
+    <div id="modal-jeda" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1e1e1e] border border-zinc-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 class="text-white font-medium mb-4 text-lg">Pilih Tipe Jeda</h3>
+            <div class="flex flex-col gap-3">
+                <button onclick="prosesJeda('Jeda Medis')" class="bg-[#380d0f] hover:bg-[#4a1215] border border-[#5c1316] text-red-400 py-3 rounded-lg text-sm font-medium transition flex flex-col items-center justify-center">
+                    <span>Jeda Medis</span>
+                    <span class="text-xs text-red-500/70 font-normal mt-1">Perawatan cedera pemain (1 menit)</span>
+                </button>
+                <button onclick="prosesJeda('Jeda Pergantian Pemain')" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-300 py-3 rounded-lg text-sm font-medium transition flex flex-col items-center justify-center">
+                    <span>Jeda Pergantian Pemain</span>
+                    <span class="text-xs text-zinc-500 font-normal mt-1">Substitusi pemain di lapangan (1 menit)</span>
+                </button>
+                <button onclick="prosesJeda('Jeda Toilet')" class="bg-[#021631] hover:bg-[#0a2347] border border-[#0f2e5a] text-blue-400 py-3 rounded-lg text-sm font-medium transition flex flex-col items-center justify-center">
+                    <span>Jeda Toilet</span>
+                    <span class="text-xs text-blue-500/70 font-normal mt-1">Pemain ke toilet (1 menit)</span>
+                </button>
+                <button onclick="prosesJeda('Lain-lain')" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-300 py-3 rounded-lg text-sm font-medium transition flex flex-col items-center justify-center">
+                    <span>Lain-lain</span>
+                    <span class="text-xs text-zinc-500 font-normal mt-1">Alasan teknis/lainnya (1 menit)</span>
+                </button>
+            </div>
+            <button onclick="batalJeda()" class="mt-4 w-full text-zinc-500 text-sm py-2 hover:text-white transition">Batal</button>
+        </div>
+    </div>
+
     <script>
         // Setup Variabel JavaScript dari Database State (Agar tahan Refresh)
         let numPointA = {{ isset($stateTerakhir['numPointA']) ? $stateTerakhir['numPointA'] : 0 }};
@@ -132,20 +178,96 @@
         let isPaused = {{ (isset($stateTerakhir['isPaused']) && $stateTerakhir['isPaused']) ? 'true' : 'false' }};
         let isSwapped = false;
         let currentServer = '{{ isset($stateTerakhir['currentServer']) ? $stateTerakhir['currentServer'] : $pertandingan->serve_awal }}';
+        let countdownInterval = null;
+        let sisaWaktuJeda = 0;
+        let targetSetsToWin = 2; // Default best of 3
+
+        function gantiFormatSet() {
+            let format = parseInt(document.getElementById('format-set-selector').value);
+            targetSetsToWin = Math.ceil(format / 2);
+            
+            for(let i=1; i<=5; i++) {
+                let th = document.getElementById('th-set-' + i);
+                let tdA = document.getElementById('set-' + i + '-a');
+                let tdB = document.getElementById('set-' + i + '-b');
+                if (th && tdA && tdB) {
+                    if(i <= format) {
+                        th.classList.remove('hidden');
+                        tdA.classList.remove('hidden');
+                        tdB.classList.remove('hidden');
+                    } else {
+                        th.classList.add('hidden');
+                        tdA.classList.add('hidden');
+                        tdB.classList.add('hidden');
+                    }
+                }
+            }
+            
+            if (setsWonA >= targetSetsToWin || setsWonB >= targetSetsToWin) {
+                akhiriMatch(setsWonA >= targetSetsToWin ? '{{ $namaTimA }}' : '{{ $namaTimB }}');
+            }
+        }
 
         function toggleJeda() {
-            isPaused = !isPaused;
-            const btnJeda = document.getElementById('btn-jeda');
-            if (isPaused) {
-                btnJeda.innerHTML = '▶ Lanjut';
-                btnJeda.classList.replace('text-zinc-300', 'text-yellow-400');
+            if (!isPaused) {
+                // Buka modal jeda
+                document.getElementById('modal-jeda').classList.remove('hidden');
             } else {
+                // Lanjutkan pertandingan
+                isPaused = false;
+                if (countdownInterval) clearInterval(countdownInterval);
+                const btnJeda = document.getElementById('btn-jeda');
                 btnJeda.innerHTML = '⏸ Jeda';
                 btnJeda.classList.replace('text-yellow-400', 'text-zinc-300');
+
+                axios.post('/tambah-poin', {
+                    skip_db: true, // Bypass simpan ke DB log_poins
+                    match_id: {{ $pertandingan->id }},
+                    tim_pemenang: '-',
+                    numPointA: numPointA,
+                    numPointB: numPointB,
+                    poinTimA: document.getElementById('poin-a-lokal').innerText,
+                    poinTimB: document.getElementById('poin-b-lokal').innerText,
+                    gameTimA: numGameA,
+                    gameTimB: numGameB,
+                    historiSetA: historiSetA,
+                    historiSetB: historiSetB,
+                    currentSet: currentSet,
+                    namaTimA: '{{ $namaTimA }}',
+                    namaTimB: '{{ $namaTimB }}',
+                    aksi: 'Pertandingan Dilanjutkan',
+                    statusMatch: 'berjalan',
+                    currentServer: currentServer
+                });
             }
+        }
+
+        function prosesJeda(tipe) {
+            document.getElementById('modal-jeda').classList.add('hidden');
+            isPaused = true;
+            sisaWaktuJeda = 60; // 1 menit
+
+            const btnJeda = document.getElementById('btn-jeda');
+            btnJeda.innerHTML = '▶ Lanjut (01:00)';
+            btnJeda.classList.replace('text-zinc-300', 'text-yellow-400');
+
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                sisaWaktuJeda--;
+                if (sisaWaktuJeda <= 0) {
+                    clearInterval(countdownInterval);
+                    btnJeda.innerHTML = '▶ Lanjut (00:00)';
+                    toggleJeda(); // Otomatis lanjut
+                } else {
+                    let m = Math.floor(sisaWaktuJeda / 60);
+                    let s = sisaWaktuJeda % 60;
+                    let timeString = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+                    btnJeda.innerHTML = '▶ Lanjut (' + timeString + ')';
+                }
+            }, 1000);
 
             axios.post('/tambah-poin', {
-                skip_db: true, // Bypass simpan ke DB log_poins
+                skip_db: true,
                 match_id: {{ $pertandingan->id }},
                 tim_pemenang: '-',
                 numPointA: numPointA,
@@ -159,10 +281,14 @@
                 currentSet: currentSet,
                 namaTimA: '{{ $namaTimA }}',
                 namaTimB: '{{ $namaTimB }}',
-                aksi: isPaused ? 'Pertandingan Dijeda' : 'Pertandingan Dilanjutkan',
-                statusMatch: isPaused ? 'jeda' : 'berjalan',
+                aksi: 'Pertandingan Dijeda (' + tipe + ')',
+                statusMatch: 'jeda',
                 currentServer: currentServer
             });
+        }
+
+        function batalJeda() {
+            document.getElementById('modal-jeda').classList.add('hidden');
         }
         
         function updateServerUI() {
@@ -182,19 +308,32 @@
             document.getElementById('poin-b-lokal').innerText = '{{ isset($stateTerakhir['poinTimB']) ? $stateTerakhir['poinTimB'] : "0" }}';
             document.getElementById('set-indicator').innerText = currentSet;
             
+            // Expand history UI array to size 5 securely
+            let hA = [...historiSetA];
+            let hB = [...historiSetB];
+            while(hA.length < 5) hA.push(0);
+            while(hB.length < 5) hB.push(0);
+            historiSetA = hA;
+            historiSetB = hB;
+
             // Set history UI
-            if (historiSetA[0] > 0 || historiSetB[0] > 0) {
-                document.getElementById('set-1-a').innerText = historiSetA[0];
-                document.getElementById('set-1-b').innerText = historiSetB[0];
-            }
-            if (historiSetA[1] > 0 || historiSetB[1] > 0) {
-                document.getElementById('set-2-a').innerText = historiSetA[1];
-                document.getElementById('set-2-b').innerText = historiSetB[1];
+            for(let i=0; i<5; i++) {
+                if (historiSetA[i] > 0 || historiSetB[i] > 0) {
+                    let tdA = document.getElementById('set-' + (i+1) + '-a');
+                    let tdB = document.getElementById('set-' + (i+1) + '-b');
+                    if(tdA && tdB) {
+                        tdA.innerText = historiSetA[i];
+                        tdB.innerText = historiSetB[i];
+                    }
+                }
             }
             
             // setsWon calc
-            setsWonA = (historiSetA[0] > historiSetB[0] ? 1 : 0) + (historiSetA[1] > historiSetB[1] ? 1 : 0) + (historiSetA[2] > historiSetB[2] ? 1 : 0);
-            setsWonB = (historiSetB[0] > historiSetA[0] ? 1 : 0) + (historiSetB[1] > historiSetA[1] ? 1 : 0) + (historiSetB[2] > historiSetA[2] ? 1 : 0);
+            setsWonA = 0; setsWonB = 0;
+            for(let i=0; i<5; i++) {
+                if (historiSetA[i] > historiSetB[i]) setsWonA++;
+                else if (historiSetB[i] > historiSetA[i]) setsWonB++;
+            }
             
             // Jeda state
             if (isPaused) {
@@ -202,6 +341,8 @@
                 btnJeda.innerHTML = '▶ Lanjut';
                 btnJeda.classList.replace('text-zinc-300', 'text-yellow-400');
             }
+            
+            updateGoldenPointUI();
         });
 
         function gantiServer() {
@@ -247,7 +388,14 @@
 
         function akhiriMatch(pemenang) {
             matchFinished = true;
-            alert("Pertandingan Selesai! Pemenang: " + pemenang);
+            
+            let riwayat = [];
+            for(let i=0; i<currentSet; i++) {
+                riwayat.push(`Set ${i+1}: ${historiSetA[i]} - ${historiSetB[i]}`);
+            }
+            let textRiwayat = riwayat.join(" | ");
+
+            alert(`Pertandingan Selesai!\nPemenang: ${pemenang}\n\nSkor Akhir:\n${textRiwayat}`);
             axios.post('/tambah-poin', {
                 skip_db: true,
                 match_id: {{ $pertandingan->id }},
@@ -298,12 +446,103 @@
             }
         }
 
+        function updateGoldenPointUI() {
+            let isTieBreak = (numGameA === 5 && numGameB === 5);
+            let isSuperTieBreak = (targetSetsToWin > 1 && currentSet === (targetSetsToWin * 2 - 1));
+            let el = document.getElementById('golden-point-indicator');
+            if (el) {
+                if (isGoldenPoint && !isTieBreak && !isSuperTieBreak && numPointA === 3 && numPointB === 3) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            }
+        }
+
+        function cekApakahAkanMenangMatch(timMenangPoin) {
+            let tempPointA = numPointA; let tempPointB = numPointB;
+            let tempGameA = numGameA; let tempGameB = numGameB;
+            let tempSetsWonA = setsWonA; let tempSetsWonB = setsWonB;
+
+            if (timMenangPoin === 'Tim A') tempPointA++; else tempPointB++;
+
+            let isSuperTieBreak = (targetSetsToWin > 1 && currentSet === (targetSetsToWin * 2 - 1));
+            let gameWonBy = null;
+            let setWonBy = null;
+
+            if (isSuperTieBreak) {
+                if (tempPointA >= 10) setWonBy = 'Tim A';
+                else if (tempPointB >= 10) setWonBy = 'Tim B';
+            } else {
+                let isTieBreak = (tempGameA === 5 && tempGameB === 5);
+                if (isTieBreak) {
+                    if (tempPointA >= 7) gameWonBy = 'Tim A';
+                    else if (tempPointB >= 7) gameWonBy = 'Tim B';
+                } else {
+                    if (tempPointA >= 3 && tempPointB >= 3) {
+                        if (isGoldenPoint) {
+                            if (tempPointA === 4) gameWonBy = 'Tim A';
+                            else if (tempPointB === 4) gameWonBy = 'Tim B';
+                        } else {
+                            if (tempPointA >= tempPointB + 2) gameWonBy = 'Tim A';
+                            else if (tempPointB >= tempPointA + 2) gameWonBy = 'Tim B';
+                        }
+                    } else {
+                        if (tempPointA === 4) gameWonBy = 'Tim A';
+                        else if (tempPointB === 4) gameWonBy = 'Tim B';
+                    }
+                }
+
+                if (gameWonBy === 'Tim A') tempGameA++;
+                else if (gameWonBy === 'Tim B') tempGameB++;
+
+                if (tempGameA >= 6) setWonBy = 'Tim A';
+                else if (tempGameB >= 6) setWonBy = 'Tim B';
+            }
+
+            if (setWonBy === 'Tim A') tempSetsWonA++;
+            else if (setWonBy === 'Tim B') tempSetsWonB++;
+
+            if (tempSetsWonA >= targetSetsToWin || tempSetsWonB >= targetSetsToWin) {
+                let riwayat = [];
+                for(let i=0; i<currentSet-1; i++) {
+                    riwayat.push(`Set ${i+1}: ${historiSetA[i]} - ${historiSetB[i]}`);
+                }
+                
+                if (isSuperTieBreak) {
+                    riwayat.push(`Set ${currentSet} (Super Tiebreak): ${tempPointA} - ${tempPointB}`);
+                } else {
+                    riwayat.push(`Set ${currentSet}: ${tempGameA} - ${tempGameB}`);
+                }
+                
+                let textRiwayat = riwayat.join(" | ");
+                let pemenangMatch = tempSetsWonA >= targetSetsToWin ? '{{ $namaTimA }}' : '{{ $namaTimB }}';
+                
+                return {
+                    isMenang: true,
+                    pesan: `Poin ini akan MENGAKHIRI PERTANDINGAN untuk kemenangan ${pemenangMatch}.\n\nPrediksi Skor Akhir:\n${textRiwayat}\n\nApakah Anda yakin ingin melanjutkan?`
+                };
+            }
+            return { isMenang: false };
+        }
+
         // FUNGSI 1: KETUK SKOR (Aksi Utama)
         function tapScore(tim) {
             if (matchFinished || isPaused) return;
             if (pendingPoin.tim !== null) return; // Mencegah klik ganda sebelum disimpan/dilewati
+            
+            // Cek apakah poin ini akan memenangkan match
+            let cekMenang = cekApakahAkanMenangMatch(tim);
+            if (cekMenang.isMenang) {
+                if (!confirm(cekMenang.pesan)) {
+                    return; // Batalkan input, skor tidak akan berubah sama sekali
+                }
+            }
+            
             saveState(); // Simpan riwayat untuk fungsi Undo
             
+            pendingPoin.tim = tim; // Set lebih awal agar tidak null
+
             // Tampilkan Detail Panel
             document.getElementById('bantuan-teks').classList.add('hidden');
             document.getElementById('panel-detail').classList.remove('hidden');
@@ -313,53 +552,69 @@
             if(tim === 'Tim B') numPointB++;
             
             let dispA = "0"; let dispB = "0";
-            let isTieBreak = (numGameA === 6 && numGameB === 6);
+            let isSuperTieBreak = (targetSetsToWin > 1 && currentSet === (targetSetsToWin * 2 - 1));
 
-            if (isTieBreak) {
-                // Logika Tie-break (1, 2, 3... win by 2)
+            if (isSuperTieBreak) {
+                // Logika Super Tie-break (Set Penentu mencapai 10 poin dulu)
                 dispA = numPointA.toString();
                 dispB = numPointB.toString();
                 
-                if (numPointA >= 7 && numPointA - numPointB >= 2) {
-                    prosesMenangGame('Tim A'); return;
-                } else if (numPointB >= 7 && numPointB - numPointA >= 2) {
-                    prosesMenangGame('Tim B'); return;
+                if (numPointA >= 10) {
+                    numGameA = numPointA; numGameB = numPointB;
+                    akhiriSetOtomatis(); return;
+                } else if (numPointB >= 10) {
+                    numGameA = numPointA; numGameB = numPointB;
+                    akhiriSetOtomatis(); return;
                 }
             } else {
-                // Logika Deuce & Advantage
-                if (numPointA >= 3 && numPointB >= 3) {
-                    if (isGoldenPoint) {
-                        // Golden Point: setelah 40-40, pemenang poin berikutnya menang game
-                        if (numPointA === 4) {
-                            prosesMenangGame('Tim A'); return;
-                        } else if (numPointB === 4) {
-                            prosesMenangGame('Tim B'); return;
-                        } else {
-                            dispA = "40"; dispB = "40"; 
-                        }
-                    } else {
-                        // Traditional Ad
-                        if (numPointA === numPointB) {
-                            dispA = "40"; dispB = "40"; 
-                        } else if (numPointA === numPointB + 1) {
-                            dispA = "Ad"; dispB = "-"; 
-                        } else if (numPointB === numPointA + 1) {
-                            dispA = "-"; dispB = "Ad"; 
-                        } else if (numPointA >= numPointB + 2) {
-                            prosesMenangGame('Tim A'); return; 
-                        } else if (numPointB >= numPointA + 2) {
-                            prosesMenangGame('Tim B'); return; 
-                        }
+                let isTieBreak = (numGameA === 5 && numGameB === 5);
+
+                if (isTieBreak) {
+                    // Logika Tie-break (mencapai poin 7 dulu tanpa win by 2)
+                    dispA = numPointA.toString();
+                    dispB = numPointB.toString();
+                    
+                    if (numPointA >= 7) {
+                        prosesMenangGame('Tim A'); return;
+                    } else if (numPointB >= 7) {
+                        prosesMenangGame('Tim B'); return;
                     }
                 } else {
-                    // Logika Normal
-                    if (numPointA === 4) {
-                        prosesMenangGame('Tim A'); return; 
-                    } else if (numPointB === 4) {
-                        prosesMenangGame('Tim B'); return; 
+                    // Logika Deuce & Advantage
+                    if (numPointA >= 3 && numPointB >= 3) {
+                        if (isGoldenPoint) {
+                            // Golden Point: setelah 40-40, pemenang poin berikutnya menang game
+                            if (numPointA === 4) {
+                                prosesMenangGame('Tim A'); return;
+                            } else if (numPointB === 4) {
+                                prosesMenangGame('Tim B'); return;
+                            } else {
+                                dispA = "40"; dispB = "40"; 
+                            }
+                        } else {
+                            // Traditional Ad
+                            if (numPointA === numPointB) {
+                                dispA = "40"; dispB = "40"; 
+                            } else if (numPointA === numPointB + 1) {
+                                dispA = "Ad"; dispB = "-"; 
+                            } else if (numPointB === numPointA + 1) {
+                                dispA = "-"; dispB = "Ad"; 
+                            } else if (numPointA >= numPointB + 2) {
+                                prosesMenangGame('Tim A'); return; 
+                            } else if (numPointB >= numPointA + 2) {
+                                prosesMenangGame('Tim B'); return; 
+                            }
+                        }
                     } else {
-                        dispA = padelScores[numPointA];
-                        dispB = padelScores[numPointB];
+                        // Logika Normal
+                        if (numPointA === 4) {
+                            prosesMenangGame('Tim A'); return; 
+                        } else if (numPointB === 4) {
+                            prosesMenangGame('Tim B'); return; 
+                        } else {
+                            dispA = padelScores[numPointA];
+                            dispB = padelScores[numPointB];
+                        }
                     }
                 }
             }
@@ -368,6 +623,8 @@
             document.getElementById('poin-a-lokal').innerText = dispA;
             document.getElementById('poin-b-lokal').innerText = dispB;
             pendingPoin.tim = tim;
+            
+            updateGoldenPointUI();
         }
 
         // FUNGSI 2: PROSES GAME & SET
@@ -379,16 +636,18 @@
             document.getElementById('poin-a-lokal').innerText = "0";
             document.getElementById('poin-b-lokal').innerText = "0";
             
+            updateGoldenPointUI();
+            
             updateTabelGame();
 
             // Pindah serve otomatis setiap pergantian game
             currentServer = currentServer === 'Tim A' ? 'Tim B' : 'Tim A';
             updateServerUI();
 
-            // Deteksi Kemenangan Set (Best of 3)
-            if ((numGameA >= 6 && numGameA - numGameB >= 2) || numGameA === 7) {
+            // Deteksi Kemenangan Set (Game sampai 6)
+            if (numGameA >= 6) {
                 akhiriSetOtomatis();
-            } else if ((numGameB >= 6 && numGameB - numGameA >= 2) || numGameB === 7) {
+            } else if (numGameB >= 6) {
                 akhiriSetOtomatis();
             }
         }
@@ -405,9 +664,22 @@
             if (pilihan) {
                 // Paksa akhiri set berjalan meskipun game masih 0-0
                 simpanRiwayatSet();
+                
+                // Pindah serve otomatis setiap pergantian set manual
+                currentServer = currentServer === 'Tim A' ? 'Tim B' : 'Tim A';
+                updateServerUI();
+                
                 if (!matchFinished) resetGameUI();
             } else {
-                let akhirMatch = confirm("PERINGATAN: Yakin ingin MENGAKHIRI SELURUH MATCH sekarang?");
+                let riwayat = [];
+                for(let i=0; i<currentSet; i++) {
+                    let gA = (i === currentSet - 1) ? numGameA : historiSetA[i];
+                    let gB = (i === currentSet - 1) ? numGameB : historiSetB[i];
+                    riwayat.push(`Set ${i+1}: ${gA} - ${gB}`);
+                }
+                let textRiwayat = riwayat.join(" | ");
+
+                let akhirMatch = confirm(`PERINGATAN: Yakin ingin MENGAKHIRI SELURUH MATCH sekarang?\n\nHasil Akhir Sementara:\n${textRiwayat}`);
                 if (akhirMatch) {
                     // Coba tentukan pemenang sementara berdasarkan statistik
                     let pemenangSementara = 'Tim A';
@@ -424,20 +696,21 @@
             historiSetA[currentSet - 1] = numGameA;
             historiSetB[currentSet - 1] = numGameB;
             
-            // Kalkulasi Set Padel (Best of 3)
+            // Kalkulasi Set Padel
             if (numGameA > numGameB) setsWonA++;
             else if (numGameB > numGameA) setsWonB++;
             
             document.getElementById('set-' + currentSet + '-a').innerText = numGameA;
             document.getElementById('set-' + currentSet + '-b').innerText = numGameB;
             
-            if (setsWonA >= 2 || setsWonB >= 2) {
-                akhiriMatch(setsWonA >= 2 ? '{{ $namaTimA }}' : '{{ $namaTimB }}');
+            if (setsWonA >= targetSetsToWin || setsWonB >= targetSetsToWin) {
+                akhiriMatch(setsWonA >= targetSetsToWin ? '{{ $namaTimA }}' : '{{ $namaTimB }}');
                 return;
             }
             
             currentSet++;
-            if (currentSet > 3) currentSet = 3; // Batas maksimal
+            let formatMax = parseInt(document.getElementById('format-set-selector').value) || 3;
+            if (currentSet > formatMax) currentSet = formatMax; // Batas maksimal dinamis
             
             document.getElementById('set-indicator').innerText = currentSet;
         }
@@ -581,6 +854,8 @@
                     el.classList.remove('ring-2', 'ring-offset-2', 'ring-offset-[#1e1e1e]', 'ring-white');
                 });
                 document.getElementById('btn-dinding').classList.remove('ring-2', 'ring-offset-2', 'ring-offset-[#1e1e1e]', 'ring-white');
+                
+                updateGoldenPointUI();
                 
                 // Broadcast ulang ke OBS (via endpoint khusus agar baris DB terakhir juga dihapus)
                 axios.post('/undo-poin', {
