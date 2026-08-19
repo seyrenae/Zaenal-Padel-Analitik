@@ -57,7 +57,7 @@
         function mulaiListen() {
             if (typeof window.Echo !== 'undefined') {
                 window.Echo.channel('pertandingan-padel.{{ $pertandingan->id }}')
-                    .listen('UpdateSkorPadel', (e) => {
+                    .listen('.UpdateSkorPadel', (e) => {
                         // Update Poin Utama
                         document.getElementById('poin-a').innerText = e.poinTimA;
                         document.getElementById('poin-b').innerText = e.poinTimB;

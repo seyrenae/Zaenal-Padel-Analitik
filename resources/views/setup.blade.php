@@ -34,7 +34,7 @@
             <input type="hidden" name="nama_turnamen" value="Padel Cup Surabaya">
             <input type="hidden" name="kategori" value="Open">
             <input type="hidden" name="babak" value="Grup A">
-            <input type="hidden" name="format_set" value="Best of 3">
+            <input type="hidden" name="format_set" value="1 Set">
             <input type="hidden" name="golden_point" value="1">
 
             <!-- Data Tim dan Pemain -->
@@ -91,7 +91,7 @@
             <button type="submit" class="w-full bg-white text-black font-bold py-4 rounded-xl shadow-lg hover:bg-gray-200 transition text-lg">
                 Mulai pertandingan
             </button>
-            <p class="text-center text-xs text-zinc-500 mt-4">Format Best of 3 · Golden point aktif — dari pengaturan turnamen</p>
+            <p class="text-center text-xs text-zinc-500 mt-4">Format 1 Set · Golden point aktif — dari pengaturan turnamen</p>
         </form>
     </div>
 </body>
