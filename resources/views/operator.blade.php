@@ -8,32 +8,32 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
-<body class="bg-[#121212] text-gray-200 min-h-screen p-6 flex justify-center items-start">
+<body class="bg-[#121212] text-gray-200 min-h-screen p-2 sm:p-6 flex justify-center items-start">
 
-    <div class="w-full max-w-[500px] bg-[#1e1e1e] p-6 rounded-2xl shadow-2xl border border-zinc-800 flex flex-col mt-4">
+    <div class="w-full max-w-[500px] bg-[#1e1e1e] p-4 sm:p-6 rounded-2xl shadow-2xl border border-zinc-800 flex flex-col mt-2 sm:mt-4">
         
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div class="flex flex-col gap-1">
                 <p class="text-zinc-400 text-sm">Live tracking · set <span id="set-indicator">1</span></p>
                 <div class="flex items-center gap-2">
                     <label class="text-xs text-zinc-500">Format:</label>
                     <select id="format-set-selector" onchange="gantiFormatSet()" class="bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs rounded px-2 py-1 outline-none focus:border-blue-500 transition">
-                        <option value="1">Best of 1</option>
-                        <option value="3" selected>Best of 3</option>
+                        <option value="1" selected>Best of 1</option>
+                        <option value="3">Best of 3</option>
                         <option value="5">Best of 5</option>
                     </select>
                 </div>
             </div>
-            <div class="flex gap-2 items-center">
-                <a href="/livestream/{{ $pertandingan->id }}" target="_blank" class="bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-300 px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer">🖥️ Buka OBS</a>
-                <span class="bg-green-900/30 text-green-500 px-3 py-1 rounded-full text-xs font-bold border border-green-800">Berlangsung</span>
+            <div class="flex flex-wrap gap-2 items-center w-full sm:w-auto justify-start sm:justify-end">
+                <a href="/livestream/{{ $pertandingan->id }}" target="_blank" class="bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 text-zinc-300 px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium transition cursor-pointer">🖥️ Buka OBS</a>
+                <span class="bg-green-900/30 text-green-500 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold border border-green-800">Berlangsung</span>
             </div>
         </div>
 
         <!-- Tabel Skor Set dan Game -->
-        <div class="mb-6 rounded-xl border border-zinc-700/60 overflow-hidden">
-            <table class="w-full text-center text-sm">
+        <div class="mb-6 rounded-xl border border-zinc-700/60 overflow-x-auto">
+            <table class="w-full text-center text-xs sm:text-sm min-w-[300px]">
                 <thead class="bg-zinc-800/40 text-zinc-400 border-b border-zinc-700/60">
                     <tr>
                         <th class="py-3 px-4 text-left font-medium">Tim</th>
@@ -69,9 +69,9 @@
         </div>
 
         <!-- Tombol Konteks -->
-        <div class="grid grid-cols-3 gap-3 mb-6">
-            <button id="btn-serve" onclick="setPukulan('Serve')" class="bg-[#0f172a] border border-blue-900 rounded-lg py-2.5 text-sm font-medium text-blue-400 transition">Serve</button>
-            <button id="btn-rally" onclick="setPukulan('Rally')" class="bg-zinc-800/50 border border-zinc-700 rounded-lg py-2.5 text-sm text-zinc-400 hover:text-white transition">Rally</button>
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
+            <button id="btn-serve" onclick="setPukulan('Serve')" class="bg-[#0f172a] border border-blue-900 rounded-lg py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-blue-400 transition">Serve</button>
+            <button id="btn-rally" onclick="setPukulan('Rally')" class="bg-zinc-800/50 border border-zinc-700 rounded-lg py-2 sm:py-2.5 text-xs sm:text-sm text-zinc-400 hover:text-white transition">Rally</button>
             <button onclick="undoPoin()" class="bg-zinc-800/50 border border-zinc-700 rounded-lg py-2.5 text-sm text-zinc-400 hover:text-white transition flex justify-center items-center gap-2">
                 ↶ Undo
             </button>
@@ -81,17 +81,17 @@
         <div id="golden-point-indicator" class="text-center text-yellow-400 text-xs font-bold bg-yellow-500/20 px-4 py-2 rounded-lg border border-yellow-500/50 hidden animate-pulse mb-4 mx-auto w-max">
             ✨ GOLDEN POINT ✨
         </div>
-        <div id="skor-raksasa-container" class="grid grid-cols-[1fr_auto_1fr] gap-4 items-center mb-4">
-            <button id="btn-skor-a" onclick="tapScore('Tim A')" class="bg-[#021631] hover:bg-[#0a2347] border border-[#0f2e5a] rounded-xl py-10 flex flex-col items-center justify-center transition shadow-lg relative">
-                <span class="text-blue-500/80 font-medium text-sm mb-2 flex items-center justify-center gap-1">Tim A <span id="serve-a" class="text-yellow-400 text-lg hidden">🎾</span></span>
-                <span id="poin-a-lokal" class="text-7xl font-medium text-blue-400">0</span>
+        <div id="skor-raksasa-container" class="grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-4 items-center mb-4">
+            <button id="btn-skor-a" onclick="tapScore('Tim A')" class="bg-[#021631] hover:bg-[#0a2347] border border-[#0f2e5a] rounded-xl py-6 sm:py-10 flex flex-col items-center justify-center transition shadow-lg relative">
+                <span class="text-blue-500/80 font-medium text-xs sm:text-sm mb-1 sm:mb-2 flex items-center justify-center gap-1">Tim A <span id="serve-a" class="text-yellow-400 text-sm sm:text-lg hidden">🎾</span></span>
+                <span id="poin-a-lokal" class="text-5xl sm:text-7xl font-medium text-blue-400">0</span>
             </button>
             
-            <div id="vs-text" class="text-zinc-600 font-medium text-xs">vs</div>
+            <div id="vs-text" class="text-zinc-600 font-medium text-[10px] sm:text-xs">vs</div>
 
-            <button id="btn-skor-b" onclick="tapScore('Tim B')" class="bg-[#380d0f] hover:bg-[#4a1215] border border-[#5c1316] rounded-xl py-10 flex flex-col items-center justify-center transition shadow-lg relative">
-                <span class="text-red-500/80 font-medium text-sm mb-2 flex items-center justify-center gap-1">Tim B <span id="serve-b" class="text-yellow-400 text-lg hidden">🎾</span></span>
-                <span id="poin-b-lokal" class="text-7xl font-medium text-red-400">0</span>
+            <button id="btn-skor-b" onclick="tapScore('Tim B')" class="bg-[#380d0f] hover:bg-[#4a1215] border border-[#5c1316] rounded-xl py-6 sm:py-10 flex flex-col items-center justify-center transition shadow-lg relative">
+                <span class="text-red-500/80 font-medium text-xs sm:text-sm mb-1 sm:mb-2 flex items-center justify-center gap-1">Tim B <span id="serve-b" class="text-yellow-400 text-sm sm:text-lg hidden">🎾</span></span>
+                <span id="poin-b-lokal" class="text-5xl sm:text-7xl font-medium text-red-400">0</span>
             </button>
         </div>
         <p id="bantuan-teks" class="text-center text-zinc-500 text-xs mb-6 font-medium">Poin saat ini di game berjalan · ketuk skor untuk mencatat poin</p>
@@ -99,19 +99,19 @@
         <!-- Panel Detail Poin (Langkah 2 - Tersembunyi default) -->
         <div id="panel-detail" class="hidden border-t border-zinc-700 pt-6 animate-fade-in">
             <p class="text-xs font-medium text-zinc-400 mb-3">Siapa yang mencetak / melakukan error? (opsional)</p>
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <button onclick="setPemain('{{ $pertandingan->tim_a_pemain_kiri }}', this)" class="btn-pemain bg-zinc-800 border border-zinc-700 text-gray-200 rounded-lg py-3 text-sm hover:bg-zinc-700 transition">{{ $pertandingan->tim_a_pemain_kiri }} (A)</button>
-                <button onclick="setPemain('{{ $pertandingan->tim_a_pemain_kanan }}', this)" class="btn-pemain bg-zinc-800 border border-zinc-700 text-gray-200 rounded-lg py-3 text-sm hover:bg-zinc-700 transition">{{ $pertandingan->tim_a_pemain_kanan }} (A)</button>
-                <button onclick="setPemain('{{ $pertandingan->tim_b_pemain_kiri }}', this)" class="btn-pemain bg-zinc-800 border border-zinc-700 text-gray-200 rounded-lg py-3 text-sm hover:bg-zinc-700 transition">{{ $pertandingan->tim_b_pemain_kiri }} (B)</button>
-                <button onclick="setPemain('{{ $pertandingan->tim_b_pemain_kanan }}', this)" class="btn-pemain bg-zinc-800 border border-zinc-700 text-gray-200 rounded-lg py-3 text-sm hover:bg-zinc-700 transition">{{ $pertandingan->tim_b_pemain_kanan }} (B)</button>
+            <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
+                <button onclick="setPemain('{{ $pertandingan->tim_a_pemain_kiri }}', this)" class="btn-pemain bg-zinc-800 border border-zinc-700 text-gray-200 rounded-lg py-2 sm:py-3 text-xs sm:text-sm hover:bg-zinc-700 transition">{{ $pertandingan->tim_a_pemain_kiri }} (A)</button>
+                <button onclick="setPemain('{{ $pertandingan->tim_a_pemain_kanan }}', this)" class="btn-pemain bg-zinc-800 border border-zinc-700 text-gray-200 rounded-lg py-2 sm:py-3 text-xs sm:text-sm hover:bg-zinc-700 transition">{{ $pertandingan->tim_a_pemain_kanan }} (A)</button>
+                <button onclick="setPemain('{{ $pertandingan->tim_b_pemain_kiri }}', this)" class="btn-pemain bg-zinc-800 border border-zinc-700 text-gray-200 rounded-lg py-2 sm:py-3 text-xs sm:text-sm hover:bg-zinc-700 transition">{{ $pertandingan->tim_b_pemain_kiri }} (B)</button>
+                <button onclick="setPemain('{{ $pertandingan->tim_b_pemain_kanan }}', this)" class="btn-pemain bg-zinc-800 border border-zinc-700 text-gray-200 rounded-lg py-2 sm:py-3 text-xs sm:text-sm hover:bg-zinc-700 transition">{{ $pertandingan->tim_b_pemain_kanan }} (B)</button>
             </div>
 
             <p class="text-xs font-medium text-zinc-400 mb-3">Jenis poin (opsional)</p>
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <button onclick="setJenis('Winner', this)" class="btn-jenis bg-[#062c12] border border-[#0d4a21] text-green-500 rounded-lg py-3 text-sm hover:bg-[#0a3f1a] transition">Winner</button>
-                <button onclick="setJenis('Unforced error', this)" class="btn-jenis bg-[#380d0f] border border-[#5c1316] text-red-400 rounded-lg py-3 text-sm hover:bg-[#4a1215] transition">Unforced error</button>
-                <button onclick="setJenis('Forced error', this)" class="btn-jenis bg-[#380d0f] border border-[#5c1316] text-red-400 rounded-lg py-3 text-sm hover:bg-[#4a1215] transition">Forced error</button>
-                <button onclick="setDinding()" id="btn-dinding" class="bg-[#021631] border border-[#0f2e5a] text-blue-400 rounded-lg py-3 text-sm hover:bg-[#0a2347] transition">Kena dinding</button>
+            <div class="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
+                <button onclick="setJenis('Winner', this)" class="btn-jenis bg-[#062c12] border border-[#0d4a21] text-green-500 rounded-lg py-2 sm:py-3 text-xs sm:text-sm hover:bg-[#0a3f1a] transition">Winner</button>
+                <button onclick="setJenis('Unforced error', this)" class="btn-jenis bg-[#380d0f] border border-[#5c1316] text-red-400 rounded-lg py-2 sm:py-3 text-xs sm:text-sm hover:bg-[#4a1215] transition">Unf. error</button>
+                <button onclick="setJenis('Forced error', this)" class="btn-jenis bg-[#380d0f] border border-[#5c1316] text-red-400 rounded-lg py-2 sm:py-3 text-xs sm:text-sm hover:bg-[#4a1215] transition">Forced error</button>
+                <button onclick="setDinding()" id="btn-dinding" class="bg-[#021631] border border-[#0f2e5a] text-blue-400 rounded-lg py-2 sm:py-3 text-xs sm:text-sm hover:bg-[#0a2347] transition">Dinding</button>
             </div>
 
             <button onclick="simpanLogPoin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm py-3 transition mb-2 shadow-lg">Simpan Poin</button>
@@ -119,14 +119,14 @@
         </div>
 
         <!-- Tombol Kontrol Bawah -->
-        <div class="mt-auto border-t border-zinc-700/60 pt-6 flex justify-between items-center">
-            <div class="flex gap-2">
-                <button id="btn-jeda" onclick="toggleJeda()" class="bg-[#1e1e1e] hover:bg-zinc-800 border border-zinc-600 text-zinc-300 px-4 py-2 rounded-lg text-sm transition">⏸ Jeda</button>
-                <button onclick="gantiSisi()" class="bg-[#1e1e1e] hover:bg-zinc-800 border border-zinc-600 text-zinc-300 px-4 py-2 rounded-lg text-sm transition">⇄ Ganti sisi</button>
-                <button onclick="gantiServer()" class="bg-[#1e1e1e] hover:bg-zinc-800 border border-zinc-600 text-zinc-300 px-4 py-2 rounded-lg text-sm transition">🎾 Serve</button>
+        <div class="mt-auto border-t border-zinc-700/60 pt-4 sm:pt-6 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-center">
+            <div class="flex flex-wrap justify-center sm:justify-start gap-2 w-full sm:w-auto">
+                <button id="btn-jeda" onclick="toggleJeda()" class="flex-1 sm:flex-none bg-[#1e1e1e] hover:bg-zinc-800 border border-zinc-600 text-zinc-300 px-3 sm:px-4 py-2 rounded-lg text-[11px] sm:text-sm transition">⏸ Jeda</button>
+                <button onclick="gantiSisi()" class="flex-1 sm:flex-none bg-[#1e1e1e] hover:bg-zinc-800 border border-zinc-600 text-zinc-300 px-3 sm:px-4 py-2 rounded-lg text-[11px] sm:text-sm transition">⇄ Ganti</button>
+                <button onclick="gantiServer()" class="flex-1 sm:flex-none bg-[#1e1e1e] hover:bg-zinc-800 border border-zinc-600 text-zinc-300 px-3 sm:px-4 py-2 rounded-lg text-[11px] sm:text-sm transition">🎾 Serve</button>
             </div>
             <!-- Menggunakan class khusus untuk tombol Akhiri Set -->
-            <button onclick="akhiriSetManual()" class="bg-[#1e1e1e] hover:bg-zinc-800 border border-zinc-600 text-zinc-300 px-5 py-2 rounded-lg text-sm transition">Akhiri set / match</button>
+            <button onclick="akhiriSetManual()" class="w-full sm:w-auto bg-[#1e1e1e] hover:bg-zinc-800 border border-zinc-600 text-zinc-300 px-5 py-2 rounded-lg text-xs sm:text-sm transition">Akhiri set / match</button>
         </div>
     </div>
 
@@ -180,7 +180,7 @@
         let currentServer = '{{ isset($stateTerakhir['currentServer']) ? $stateTerakhir['currentServer'] : $pertandingan->serve_awal }}';
         let countdownInterval = null;
         let sisaWaktuJeda = 0;
-        let targetSetsToWin = 2; // Default best of 3
+        let targetSetsToWin = 1; // Default 1 set
 
         function gantiFormatSet() {
             let format = parseInt(document.getElementById('format-set-selector').value);
