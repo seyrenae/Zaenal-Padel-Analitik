@@ -17,9 +17,9 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        host: '127.0.0.1', // Membuka akses jaringan lokal
-        allowedHosts: true, // Mengizinkan semua domain ngrok untuk mengakses Vite kamu
-        cors: true, // Tambahkan ini agar tidak kena block CORS
+        host: '192.168.88.56', // Menggunakan IP Lokal agar bisa diakses dari HP
+        allowedHosts: true, 
+        cors: true,
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
